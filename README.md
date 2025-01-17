@@ -1,43 +1,100 @@
-# Spark-DP-101
+# Spark-DP-201
 
-Spark Data Platform-101 is a Very basic Apache Spark setup in a Docker Container. 
+Spark Data Platform-201 is a Very basic Apache Spark and Airflow setup using Docker Containers. 
 This setup is designed for testing Apache spark and for learning purpose as an alternative to VM's 
-which are big in volume and take too much resources. 
+which are big in volume and take too much. 
 This docker application has all basic features of Apache Spark like:
 1. Spark Shell 
 2. Pyspark Shell 
 3. Jupyter Notebook http://localhost:4041
 4. Spark UI http://localhost:4040
 5. Spark History Server http://localhost:18080
+6. Airflow UI http://localhost:8080 user: admin password: admin
 
 ### Architecture
-
-> ![hl_architecture.png](resources/hl_architecture.png)
+In current architecture, Airflow container is directly connecting to spark container using two connections. 
+However an Ideal architecture can be having an intermediate node (Edge Node) for connecting to Spark or 
+running any other type of job. But as the quote goes *Simple is Beautiful*, so let's go ahead with this 
+> ![architecture.png](resources%2Farchitecture.png)
 
 ### How to use it:
 #### 1. Clone the repository in your machine using git clone command  
    ```commandline
    git clone git@github.com:experientlabs/spark-dp-101.git
    ```
-#### 2. Next build the image by running below `docker build` command.  
+
+#### 2. Generate ssh key pair, this will be used to communicate between airflow and spark node.
+Since this setup is in docker on same machine so both nodes can communiate even without ssh key but it is better to 
+use the ssh key to demonstrate this feature. 
+
+```shell
+ ./generate_ssh_key.sh
+```
+
+```shell
+./mwaa-local-env build-image
+```
+
+#### 3. Run any of the following docker compose commands
+- docker compose up jupyter
+- docker-compose up spark-shell
+- docker-compose up pyspark
+
+
+
+
+#### 4. Go to the cloned directory (spark-dp-101/) and run below command to allow docker write access to app directory. 
+You can also follow a different approach by creating a user named `sparkuser` as created in Dockerfile, in that case
+you don't need to give 777 access to app directory. 
+   ```commandline
+   chmod -R 777 app/
+   ```
+
+
+
+
+docker build -t custom-airflow:latest -f airflow.Dockerfile .
+docker run -d -p 8080:8080 --name airflow custom-airflow:latest
+
+
+
+
+
+
+
+
+
+docker-compose up --build
+
+
+
+
+# If you want to use docker commands to run Spark container only
+
+
+#### 3. Next build the image by running below `docker build` command.  
 
    ```commandline
-   docker build -t spark-dp-101 .
+    docker build -t spark1n -f spark.Dockerfile .
+    
    ```
-   - Here -t is to tag image with a name:`spark-dp-101`.
-   - Here '.' is to run the build command in current directory. So dockerfile should be located in current directory.   
+   - Here -t is to tag image with a name:`spark1n`.
+   - Here '.' is to run the build command in current directory. 
+   - -f spark.Dockerfile is to specify dockerfile if it is named differently than `Dockerifle`.   
 
 #### 3. Once image is built you need to run following command to run the container in jupyter notebook mode. 
 
    ```commandline
    hostfolder="$(pwd)"
    dockerfolder="/home/sparkuser/app"
-   
+ 
    docker run --rm -d --name spark-container \
    -p 4040:4040 -p 4041:4041 -p 18080:18080 \
    -v ${hostfolder}/app:${dockerfolder} -v ${hostfolder}/event_logs:/home/spark/event_logs \
    spark-dp-101:latest jupyter
    ```
+
+
 
 ####  In order to run it in saprk-shell mode use below command (here last parameter is replaced with `spark-shell`). 
 
