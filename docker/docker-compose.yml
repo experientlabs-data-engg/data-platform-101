@@ -39,22 +39,22 @@ services:
     env_file:
       - ./config/.env.localrunner
 
-#  jupyter:
-#    build:
-#      context: ..
-#      dockerfile: spark.Dockerfile
-#    image: spark1n:latest
-#    container_name: spark-container-jupyter
-#    ports:
-#      - "8888:8888"
-#      - "4041:4041"
-#      - "4040:4040"
-#      - "18080:18080"
-#    volumes:
-#      - ../app:/home/sparkuser/app
-#      - ../app/event_logs:/home/spark/event_logs
-#      - ./ssh_keys:/home/sparkuser/.ssh
-#    environment:
-#      SSH_PUBLIC_KEY_PATH: /home/sparkuser/.ssh/id_rsa.pub
-#    command: jupyter
-#    restart: unless-stopped
+  jupyter:
+    build:
+      context: ..
+      dockerfile: spark.Dockerfile
+    image: spark1n:latest
+    container_name: spark-container-jupyter
+    ports:
+      - "8888:8888"
+      - "4041:4041"
+      - "4040:4040"
+      - "18080:18080"
+    volumes:
+      - ../app:/home/sparkuser/app
+      - ../app/event_logs:/home/spark/event_logs
+      - ./ssh_keys:/home/sparkuser/.ssh
+    environment:
+      SSH_PUBLIC_KEY_PATH: /home/sparkuser/.ssh/id_rsa.pub
+    command: jupyter
+    restart: unless-stopped

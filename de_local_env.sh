@@ -14,13 +14,22 @@ display_help() {
    echo "help                   Print CLI help"
    echo "generate-ssh-key       Generate ssh key in root directory"
    echo "build-image            Build Image Locally"
-   echo "reset-db               Reset local PostgresDB container."
    echo "start                  Start Airflow local environment. (LocalExecutor, Using postgres DB)"
+   echo "reset-db               Reset local PostgresDB container."
    echo "test-requirements      Install requirements on an ephemeral instance of the container."
    echo "package-requirements   Download requirements WHL files into plugins folder."
-   echo "test-startup-script    Execute shell script on an ephemeral instance of the container."
    echo "validate-prereqs       Validate pre-reqs installed (docker, docker compose, python3, pip3)"
    echo
+}
+
+
+generate_ssh_key(){
+  rm -rf "./docker/ssh_keys/id_rsa" && ssh-keygen -t rsa -C "codexecutor@gmail.com" -f "./docker/ssh_keys/id_rsa" -P "" -q
+}
+
+build_image() {
+   docker build --rm --compress -t airflow-dev:$AIRFLOW_VERSION ./docker -f ./docker/airflow.Dockerfile
+   docker build --rm --compress -t spark1n:latest ./docker -f ./docker/spark.Dockerfile
 }
 
 validate_prereqs() {
@@ -53,15 +62,6 @@ validate_prereqs() {
    fi
 }
 
-generate_ssh_key(){
-  rm -rf "./docker/ssh_keys/id_rsa" && ssh-keygen -t rsa -C "codexecutor@gmail.com" -f "./docker/ssh_keys/id_rsa" -P "" -q
-}
-
-build_image() {
-   docker build --rm --compress -t airflow-dev:$AIRFLOW_VERSION ./docker -f ./docker/airflow.Dockerfile
-   docker build --rm --compress -t spark1n:latest ./docker -f ./docker/spark.Dockerfile
-}
-
 case "$1" in
 validate-prereqs)
    validate_prereqs
@@ -75,16 +75,6 @@ test-requirements)
      build_image
    fi
    docker run -v $(pwd)/dags:/usr/local/airflow/dags -v $(pwd)/plugins:/usr/local/airflow/plugins -v $(pwd)/requirements:/usr/local/airflow/requirements -it airflow-dev:$AIRFLOW_VERSION test-requirements
-   ;;
-test-startup-script)
-   BUILT_IMAGE=$(docker images -q airflow-dev:$AIRFLOW_VERSION)
-   if [[ -n "$BUILT_IMAGE" ]]; then
-      echo "Container airflow-dev:$AIRFLOW_VERSION exists. Skipping build"
-   else
-      echo "Container airflow-dev:$AIRFLOW_VERSION not built. Building locally."
-      build_image
-   fi
-   docker run -v $(pwd)/startup_script:/usr/local/airflow/startup -it airflow-dev:$AIRFLOW_VERSION test-startup-script
    ;;
 package-requirements)
    BUILT_IMAGE=$(docker images -q airflow-dev:$AIRFLOW_VERSION)
@@ -106,7 +96,7 @@ reset-db)
    docker compose -p $DOCKER_COMPOSE_PROJECT_NAME -f ./docker/docker-compose-resetdb.yml up --abort-on-container-exit
    ;;
 start)
-   docker compose -p $DOCKER_COMPOSE_PROJECT_NAME -f ./docker/docker-compose-local.yml up
+   docker compose -p $DOCKER_COMPOSE_PROJECT_NAME -f ./docker/docker-compose.yml up
    ;;
 help)
    display_help
