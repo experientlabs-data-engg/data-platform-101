@@ -1,5 +1,7 @@
 from pyspark.sql import SparkSession
 from pyspark.sql import functions as f
+import findspark
+findspark.init()
 
 # Initialize SparkSession
 spark = SparkSession.builder \
@@ -7,7 +9,7 @@ spark = SparkSession.builder \
     .getOrCreate()
 
 # Read text file
-df_text_file = spark.read.text("textfile.txt")  # Ensure textfile.txt is accessible
+df_text_file = spark.read.text("/home/sparkuser/app/textfile.txt")  # Ensure textfile.txt is accessible
 df_text_file.show()
 df_text_file.show(truncate=False)
 

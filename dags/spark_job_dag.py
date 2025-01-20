@@ -25,8 +25,7 @@ with DAG(
     run_spark_job = SSHOperator(
         task_id="run_spark_job",
         ssh_conn_id="ssh-spark-connection",  # Predefined SSH connection in Airflow
-        command="spark-submit /home/sparkuse/app/spark_job.py",
-        dag=dag,
+        command="spark-submit /home/sparkuse/app/spark_job.py"
     )
 
     run_spark_job

@@ -11,6 +11,7 @@ default_args = {
     "retries": 1,
 }
 
+
 # Create the DAG
 with DAG(
     dag_id="spark_job_via_ssh_python",
@@ -21,12 +22,27 @@ with DAG(
     catchup=False,
 ) as dag:
 
+
+    spark_submit_template = """
+    export SPARK_HOME=/home/spark;
+    export PATH=$SPARK_HOME/bin:$PATH;
+    echo "executing below script";
+    echo "+++++++++++++++++++++++++++++++++++++++"
+    echo "spark-submit /home/sparkuser/app/word_count_job.py";
+    echo "+++++++++++++++++++++++++++++++++++++++";
+    spark-submit /home/sparkuser/app/word_count_job.py
+    """
+
+    def generate_spark_submit_dag(**kwargs) -> str:
+        return spark_submit_template.format(**kwargs)
+
     # SSH Operator to execute the Spark job using python
     run_spark_job = SSHOperator(
         task_id="run_spark_job",
         ssh_conn_id="ssh-spark-connection",  # Predefined SSH connection in Airflow
-        command="python /home/sparkuser/app/word_count_job.py",  # Use python to execute
-        dag=dag,
+        command=generate_spark_submit_dag,  # Use python to execute
+        cmd_timeout=3600,  # Set timeout to 1 hour or an appropriate value
+
     )
 
     run_spark_job
