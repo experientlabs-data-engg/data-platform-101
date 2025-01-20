@@ -65,11 +65,16 @@ RUN pip install --no-cache-dir jupyter findspark
 COPY scripts/entrypoint_spark.sh /home/spark/entrypoint.sh
 RUN chmod +x /home/spark/entrypoint.sh
 
+# Create the .ssh directory and set permissions
 RUN mkdir -p /home/sparkuser/.ssh && \
     chown -R sparkuser:sparkuser /home/sparkuser/.ssh && \
-    chmod 700 /home/sparkuser/.ssh && \
-    echo ./ssh_keys/id_rsa.pub > /home/sparkuser/.ssh/authorized_keys && \
-    chown sparkuser:sparkuser /home/sparkuser/.ssh/authorized_keys && \
+    chmod 700 /home/sparkuser/.ssh
+
+# Copy the public key directly to the authorized_keys file
+COPY ./ssh_keys/id_rsa.pub /home/sparkuser/.ssh/authorized_keys
+
+# Set ownership and permissions for the authorized_keys file
+RUN chown sparkuser:sparkuser /home/sparkuser/.ssh/authorized_keys && \
     chmod 600 /home/sparkuser/.ssh/authorized_keys
 
 
