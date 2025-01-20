@@ -24,7 +24,7 @@ display_help() {
 
 
 generate_ssh_key(){
-  rm -rf "./docker/ssh_keys/id_rsa" && ssh-keygen -t rsa -C "codexecutor@gmail.com" -f "./docker/ssh_keys/id_rsa" -P "" -q
+  rm -rf "./docker/ssh_keys/id_rsa" && ssh-keygen -t rsa -b 2048 -C "codexecutor@gmail.com" -f "./docker/ssh_keys/id_rsa" -P "" -q
 }
 
 build_image() {

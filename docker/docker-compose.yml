@@ -11,9 +11,12 @@ services:
         max-file: "3"
     volumes:
       - "${PWD}/db-data:/var/lib/postgresql/data"
+    networks:
+      - airflow_network
 
   local-runner:
     image: airflow-dev:2_10
+    container_name: airflow-2_10
     restart: always
     depends_on:
       - postgres
@@ -28,6 +31,7 @@ services:
       - "${PWD}/dags:/usr/local/airflow/dags"
       - "${PWD}/plugins:/usr/local/airflow/plugins"
       - "${PWD}/requirements:/usr/local/airflow/requirements"
+      - "${PWD}/ssh_keys:/usr/local/airflow/.ssh/"
     ports:
       - "8080:8080"
     command: local-runner
@@ -38,23 +42,32 @@ services:
       retries: 3
     env_file:
       - ./config/.env.localrunner
+    networks:
+      - airflow_network
 
   jupyter:
     build:
       context: ..
       dockerfile: spark.Dockerfile
     image: spark1n:latest
-    container_name: spark-container-jupyter
+    container_name: spark-jupyter
     ports:
       - "8888:8888"
       - "4041:4041"
       - "4040:4040"
       - "18080:18080"
+      - "2222:22"
     volumes:
       - ../app:/home/sparkuser/app
       - ../app/event_logs:/home/spark/event_logs
-      - ./ssh_keys:/home/sparkuser/.ssh
+#      - ./ssh_keys:/home/sparkuser/.ssh
     environment:
       SSH_PUBLIC_KEY_PATH: /home/sparkuser/.ssh/id_rsa.pub
     command: jupyter
     restart: unless-stopped
+    networks:
+      - airflow_network
+
+networks:
+  airflow_network:
+    driver: bridge

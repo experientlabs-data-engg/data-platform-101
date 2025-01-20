@@ -17,6 +17,7 @@ RUN apt-get update && apt-get install -y \
     vim \
     sudo \
     whois \
+    openssh-server \
     ca-certificates-java \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
@@ -64,8 +65,21 @@ RUN pip install --no-cache-dir jupyter findspark
 COPY scripts/entrypoint_spark.sh /home/spark/entrypoint.sh
 RUN chmod +x /home/spark/entrypoint.sh
 
+RUN mkdir -p /home/sparkuser/.ssh && \
+    chown -R sparkuser:sparkuser /home/sparkuser/.ssh && \
+    chmod 700 /home/sparkuser/.ssh && \
+    echo ./ssh_keys/id_rsa.pub > /home/sparkuser/.ssh/authorized_keys && \
+    chown sparkuser:sparkuser /home/sparkuser/.ssh/authorized_keys && \
+    chmod 600 /home/sparkuser/.ssh/authorized_keys
+
+
+RUN sudo mkdir /var/run/sshd && \
+    sudo chmod 0755 /var/run/sshd && \
+    sudo service ssh start
+
 # Switch to non-root user
-USER $USERNAME
+#USER $USERNAME
+USER root
 
 # Set workdir and create application directories
 RUN mkdir -p /home/$USERNAME/app
@@ -73,6 +87,6 @@ RUN mkdir -p /home/$USERNAME/app
 WORKDIR /home/$USERNAME/app
 
 # Expose necessary ports for Jupyter and Spark UI
-EXPOSE 4040 4041 18080 8888
+EXPOSE 4040 4041 18080 8888 22
 
 ENTRYPOINT ["/home/spark/entrypoint.sh"]
