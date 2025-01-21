@@ -16,7 +16,7 @@ def process_private_key(file_path):
         return key.replace('\n', '\\n')
 
 
-def wait_and_setup_connection(basic_auth, private_key_path):
+def wait_and_setup_connection(basic_auth, private_key_path, connection_id):
     wait_time = 0
     while True:
         try:
@@ -31,7 +31,7 @@ def wait_and_setup_connection(basic_auth, private_key_path):
 
                 # Prepare the connection payload
                 ssh_conn = {
-                    "connection_id": "ssh_spark_node",
+                    "connection_id": connection_id,
                     "conn_type": "ssh",
                     "host": "spark-jupyter",
                     "login": "sparkuser",
@@ -49,7 +49,8 @@ def wait_and_setup_connection(basic_auth, private_key_path):
             raise Exception("Could not connect to Airflow")
 
 
+
 if __name__ == "__main__":
     basic_auth = HTTPBasicAuth('admin', 'test')
-    # basic_auth = ('admin', 'test')
-    wait_and_setup_connection(basic_auth, 'docker/ssh_keys/id_rsa')
+    wait_and_setup_connection(basic_auth, 'docker/ssh_keys/id_rsa', "ssh_spark_node")
+    wait_and_setup_connection(basic_auth, 'docker/ssh_keys/id_rsa', "ssh-spark-connection")
