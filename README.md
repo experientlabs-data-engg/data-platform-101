@@ -7,7 +7,7 @@
    git clone git@github.com:experientlabs/spark-dp-101.git
    ```
 
-### 2. Generate ssh key pair.
+### Step 2. Generate ssh key pair.
 This will be used for establishing communication between airflow and spark nodes. 
 So that airflow can run ssh jobs on spark node
 
@@ -15,19 +15,19 @@ So that airflow can run ssh jobs on spark node
 ./mwaa-local-env generate-ssh-key
 ```
 
-### 3. Build Image.
+### Step 3. Build Image.
 
 ```shell
 ./de-local-env build-image
 ```
 
-### 4. Run the setup.
+### Step 4. Run the setup.
 
 ```shell
 ./de-local-env start
 ```
 
-### 5. Allow container to write to app directory which is used as volume mount
+### Step 5. Allow container to write to app directory which is used as volume mount
 ```shell
 chmod -R 777 app/
 ```

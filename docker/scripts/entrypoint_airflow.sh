@@ -62,18 +62,18 @@ wait_for_port() {
   done
 }
 
-execute_startup_script() {
-  # Execute customer provided shell script
-  if [[ -e "$AIRFLOW_HOME/startup/startup.sh" ]]; then
-    bash /shell-launch-script.sh
-    source stored_env
-    export AIRFLOW_HOME="/usr/local/airflow"
-    export AIRFLOW__CORE__LOAD_EXAMPLES="False"
-    cd "$AIRFLOW_HOME"
-  else
-    echo "No startup script found, skipping execution."
-  fi
-}
+#execute_startup_script() {
+#  # Execute customer provided shell script
+#  if [[ -e "$AIRFLOW_HOME/startup/startup.sh" ]]; then
+#    bash /shell-launch-script.sh
+#    source stored_env
+#    export AIRFLOW_HOME="/usr/local/airflow"
+#    export AIRFLOW__CORE__LOAD_EXAMPLES="False"
+#    cd "$AIRFLOW_HOME"
+#  else
+#    echo "No startup script found, skipping execution."
+#  fi
+#}
 
 # Other executors than SequentialExecutor drive the need for an SQL database, here PostgreSQL is used
 if [ "$AIRFLOW__CORE__EXECUTOR" != "SequentialExecutor" ]; then
@@ -126,7 +126,7 @@ case "$1" in
     fi
 
 
-    execute_startup_script
+#    execute_startup_script
     source stored_env
     export AIRFLOW_HOME="/usr/local/airflow"
     export AIRFLOW__CORE__LOAD_EXAMPLES="False"
