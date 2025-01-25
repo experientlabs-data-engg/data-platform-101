@@ -20,7 +20,7 @@ This will be used for establishing communication between airflow and spark nodes
 So that airflow can run ssh jobs on spark node
 
 ```shell
-./mwaa-local-env generate-ssh-key
+./de-local-env generate-ssh-key
 ```
 
 ### Step 3. Build Image.
