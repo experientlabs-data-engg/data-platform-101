@@ -22,17 +22,17 @@ RUN apt-get update && apt-get install -y \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-#RUN SPARK_DOWNLOAD_URL="https://dlcdn.apache.org/spark/spark-${SPARK_VERSION}/spark-${SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}.tgz" \
-#    && wget --verbose -O apache-spark.tgz "${SPARK_DOWNLOAD_URL}" \
-#    && mkdir -p /home/spark \
-#    && tar -xf apache-spark.tgz -C /home/spark --strip-components=1 \
-#    && rm apache-spark.tgz
+RUN SPARK_DOWNLOAD_URL="https://dlcdn.apache.org/spark/spark-${SPARK_VERSION}/spark-${SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}.tgz" \
+    && wget --verbose -O apache-spark.tgz "${SPARK_DOWNLOAD_URL}" \
+    && mkdir -p /home/spark \
+    && tar -xf apache-spark.tgz -C /home/spark --strip-components=1 \
+    && rm apache-spark.tgz
 
 # Use local downloaded jar/tarball into the image if you don't want to download from the internet
-COPY spark-3.5.4-bin-hadoop3.tgz /tmp/apache-spark.tgz
-RUN mkdir -p ${SPARK_HOME} \
-    && tar -xf /tmp/apache-spark.tgz -C ${SPARK_HOME} --strip-components=1 \
-    && rm /tmp/apache-spark.tgz
+# COPY spark-3.5.4-bin-hadoop3.tgz /tmp/apache-spark.tgz
+# RUN mkdir -p ${SPARK_HOME} \
+#    && tar -xf /tmp/apache-spark.tgz -C ${SPARK_HOME} --strip-components=1 \
+#    && rm /tmp/apache-spark.tgz
 
 # Set up a non-root user
 ARG USERNAME=sparkuser
